@@ -28,13 +28,16 @@ db.connect((err) => {
 });
 
 app.get("/user", (req, res) => {
-  db.query(
-    "SELECT * FROM users WHERE email = '" + req.query.email + "'",
-    (err, result) => {
-      if (err) throw err;
-      res.json(result);
+  const email = req.query.email;
+  const query = "SELECT * FROM users WHERE email = ?";
+  
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      res.status(500).send('An error occurred while fetching the user data.');
+      return;
     }
-  );
+    res.json(result);
+  });
 });
 
 app.post("/login", (req, res) => {
